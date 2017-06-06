@@ -1,0 +1,69 @@
+version: 1.0.{build}
+
+branches:
+  except:
+    - release/1.0
+
+clone_depth: 1
+shallow_clone: true
+
+#do not build on tags
+skip_tags: true
+
+os: Visual Studio 2013
+
+environment:
+  VisualStudioVersion: "12.0"
+  CMAKE_GENERATOR: "Visual Studio 12 2013"
+
+matrix:
+  fast_finish: false #finish build once one of the jobs fails
+
+platform:
+  - Win32
+  - x64
+
+configuration:
+  - Debug
+  - Release
+
+#scripts that are called at very beginning, before repo cloning
+init:
+  - ps: Update-AppveyorBuild -Version "1.0-git-$($env:appveyor_repo_commit.substring(0,8))"
+  - cmake --version
+  - msbuild /version
+
+#where to clone the git repository to
+clone_folder: C:\projects\OpenJK
+
+#scripts to run before build
+before_build:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - if "%Platform%"=="x64" set "CMAKE_GENERATOR=%CMAKE_GENERATOR% Win64"
+  - echo "Generator='%CMAKE_GENERATOR%'"
+  - echo "Platform='%Platform%'"
+  - if exist build rmdir /q /s build #remove build dir
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_INSTALL_PREFIX=install -G "%CMAKE_GENERATOR%" "%APPVEYOR_BUILD_FOLDER%"
+  - ls
+
+build:
+  parallel: true
+  project: C:\projects\OpenJK\build\OpenJK.sln
+  verbosity: normal
+
+#scripts to run after build
+after_build:
+  - cmake --build . --target INSTALL
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - 7z a openjk-windows.zip %APPVEYOR_BUILD_FOLDER%/build/install/JediAcademy/*
+  - 7z l openjk-windows.zip # list files in the zip file
+
+artifacts:
+  - path: openjk-windows.zip
+    name: OpenJK Jedi Academy ZIP
+    type: zip
+
+deploy_script:
+  - tools/builds/deploy.bat
