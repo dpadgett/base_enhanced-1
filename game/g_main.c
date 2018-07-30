@@ -97,6 +97,9 @@ vmCvar_t	g_optvehtrace;
 
 vmCvar_t	g_locationBasedDamage;
 
+vmCvar_t	g_disruptorGhoul2Blocks;
+vmCvar_t	g_disruptorOnlyDef3Blocks;
+
 vmCvar_t	g_allowHighPingDuelist;
 
 vmCvar_t	g_logClientInfo;
@@ -419,6 +422,9 @@ static cvarTable_t		gameCvarTable[] = {
     { &g_optvehtrace, "com_optvehtrace", "0", 0, 0, qtrue },
 
     { &g_locationBasedDamage, "g_locationBasedDamage", "2", 0, 0, qtrue },
+
+	{ &g_disruptorGhoul2Blocks, "g_disruptorGhoul2Blocks", "1", 0, 0, qtrue },
+	{ &g_disruptorOnlyDef3Blocks, "g_disruptorOnlyDef3Blocks", "1", 0, 0, qtrue },
 
     { &g_allowHighPingDuelist, "g_allowHighPingDuelist", "1", 0, 0, qtrue },
 
